@@ -1,16 +1,42 @@
-# Bike Sharing Dataset - Analisis Data
+# 🚲 Bike Sharing Dataset - Analisis Data
 
-Ini adalah proyek yang dibuat untuk memenuhi sub-mission Coding Camp by DBS Foundation 2025.
+Proyek ini dibuat untuk memenuhi sub-mission **Coding Camp by DBS Foundation 2025**.
+Aplikasi ini menganalisis pola penyewaan sepeda berdasarkan berbagai faktor seperti musim, kecepatan angin, dan waktu penggunaan
 
-## Cara Menjalankan di Mesin Anda Sendiri
+---
 
-### 1. Instalasi Dependensi
+## 📌 Fitur Utama
+✅ **Analisis Pola Penyewaan Sepeda Berdasarkan Musim**  
+✅ **Pengaruh Kecepatan Angin terhadap Jumlah Penyewaan**  
+✅ **Visualisasi Data dengan Matplotlib & Seaborn**  
+✅ **Dashboard Interaktif Menggunakan Streamlit**  
+✅ **Dapat Dijalankan Secara Lokal & Online (Streamlit Cloud)**
+
+---
+
+## 🚀 Cara Menjalankan Aplikasi
+
+### 1️⃣ **Clone Repository**
+git clone https://github.com/username/bike-sharing-analysis.git
+cd bike-sharing-analysis
+
+### 2️⃣ **Instalasi Dependensi**
+Pastikan Python (versi 3.8 ke atas) sudah terinstal, lalu jalankan perintah berikut:
 pip install -r requirements.txt
 
-### 2. Jalankan Aplikasi
+### 3️⃣ **Jalankan Aplikasi secara Lokal**
 streamlit run main.py
+Aplikasi akan terbuka di browser secara otomatis.
 
-### 3. Link Deploy Streamlit Cloud
-Aplikasi ini telah dideploy dan dapat diakses melalui tautan berikut:
-[Klik di sini untuk membuka aplikasi](https://bike-sharing-data-analysis-dbs.streamlit.app/)
+### 4️⃣ **Akses Aplikasi yang Telah Dideploy**
+Aplikasi ini telah dideploy dan dapat diakses secara online melalui tautan berikut:
+👉 [**Buka Aplikasi**](https://bike-sharing-data-analysis-dbs.streamlit.app/)
 
+---
+
+## 📊 Teknologi yang Digunakan
+- **Python** (pandas, numpy, matplotlib, seaborn, streamlit)
+- **Streamlit** untuk pembuatan dashboard interaktif
+- **GitHub & Streamlit Cloud** untuk deployment
+
+---
