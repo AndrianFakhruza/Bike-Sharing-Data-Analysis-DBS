@@ -1,2 +1,2 @@
 link github : https://github.com/AndrianFakhruza/Bike-Sharing-Data-Analysis-DBS.git
-link deploy : 
+link deploy : https://bike-sharing-data-analysis-dbs.streamlit.app/
