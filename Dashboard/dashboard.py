@@ -29,9 +29,9 @@ def load_data():
 day_df, hour_df = load_data()
 
 if day_df is not None and hour_df is not None:
-    # Sidebar Menu
+    # Sidebar Menu dengan Dropdown
     st.sidebar.title("📊 Menu Analisis")
-    menu = st.sidebar.radio(
+    menu = st.sidebar.selectbox(
         "Pilih Analisis:", 
         ["Statistik Penyewaan", "Penyewaan Berdasarkan Jam", "Weekday vs Weekend", "Pengaruh Suhu"]
     )
