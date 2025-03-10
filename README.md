@@ -18,8 +18,8 @@ Aplikasi ini menganalisis pola penyewaan sepeda berdasarkan berbagai faktor sepe
 
 ### 1️⃣ **Clone Repository**
 ```bash
-git clone https://github.com/username/bike-sharing-analysis.git
-cd bike-sharing-analysis
+git clone https://github.com/AndrianFakhruza/Bike-Sharing-Data-Analysis-DBS.git
+cd Bike-Sharing-Data-Analysis-DBS
 ```
 
 ### 2️⃣ **Instalasi Dependensi**
@@ -30,7 +30,7 @@ pip install -r requirements.txt
 
 ### 3️⃣ **Jalankan Aplikasi secara Lokal**
 ```bash
-streamlit run main.py
+streamlit run dashboard.py
 ```
 Aplikasi akan terbuka di browser secara otomatis.
 
