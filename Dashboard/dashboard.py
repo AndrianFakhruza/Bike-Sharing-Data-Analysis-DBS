@@ -29,52 +29,61 @@ def load_data():
 day_df, hour_df = load_data()
 
 if day_df is not None and hour_df is not None:
+    # Sidebar Menu
+    st.sidebar.title("📊 Menu Analisis")
+    menu = st.sidebar.radio(
+        "Pilih Analisis:", 
+        ["Statistik Penyewaan", "Penyewaan Berdasarkan Jam", "Weekday vs Weekend", "Pengaruh Suhu"]
+    )
+
     # Header Dashboard
     st.title("🚲 Dashboard Penyewaan Sepeda")
     st.write("Analisis data penyewaan sepeda berdasarkan berbagai faktor.")
 
     # Statistik Penyewaan
-    st.header("Total Penyewaan")
-    st.subheader("3,292,679")
+    if menu == "Statistik Penyewaan":
+        st.header("📌 Statistik Penyewaan Sepeda")
+        col1, col2, col3 = st.columns(3)
 
-    st.header("Rata-rata Penyewaan per Hari")
-    st.subheader("4,504")
-
-    st.header("Penyewaan Tertinggi")
-    st.subheader("8,714 pada 15 Sep 2012")
+        col1.metric("Total Penyewaan", "3,292,679")
+        col2.metric("Rata-rata Penyewaan per Hari", "4,504")
+        col3.metric("Penyewaan Tertinggi", "8,714 pada 15 Sep 2012")
 
     # Jumlah Penyewaan Berdasarkan Jam
-    st.header("Jumlah Penyewaan Berdasarkan Jam")
-    if "hr" in hour_df.columns and "cnt" in hour_df.columns:
-        hourly_count = hour_df.groupby("hr")["cnt"].sum().reset_index()
-        fig, ax = plt.subplots()
-        sns.lineplot(x="hr", y="cnt", data=hourly_count, marker="o", ax=ax)
-        ax.set_xlabel("Jam")
-        ax.set_ylabel("Jumlah Penyewaan")
-        ax.set_title("Jumlah Penyewaan Sepeda Berdasarkan Jam")
-        st.pyplot(fig)
-    else:
-        st.error("❌ Kolom 'hr' atau 'cnt' tidak ditemukan di 'hour.csv'.")
+    elif menu == "Penyewaan Berdasarkan Jam":
+        st.header("📌 Jumlah Penyewaan Berdasarkan Jam")
+        if "hr" in hour_df.columns and "cnt" in hour_df.columns:
+            hourly_count = hour_df.groupby("hr")["cnt"].sum().reset_index()
+            fig, ax = plt.subplots()
+            sns.lineplot(x="hr", y="cnt", data=hourly_count, marker="o", ax=ax)
+            ax.set_xlabel("Jam")
+            ax.set_ylabel("Jumlah Penyewaan")
+            ax.set_title("Jumlah Penyewaan Sepeda Berdasarkan Jam")
+            st.pyplot(fig)
+        else:
+            st.error("❌ Kolom 'hr' atau 'cnt' tidak ditemukan di 'hour.csv'.")
 
     # Analisis Weekday vs Weekend
-    st.header("📌 Bagaimana tren jumlah penyewaan sepeda berdasarkan hari kerja dan akhir pekan?")
-    if "weekday" in day_df.columns and "cnt" in day_df.columns:
-        weekday_total = day_df[day_df['weekday'] < 5]['cnt'].sum()
-        weekend_total = day_df[day_df['weekday'] >= 5]['cnt'].sum()
-        st.bar_chart(pd.DataFrame({"Weekday": [weekday_total], "Weekend": [weekend_total]}))
-        st.success(f"✅ Hasil: Jumlah penyewaan sepeda lebih tinggi pada hari kerja ({weekday_total}) dibandingkan akhir pekan ({weekend_total}).")
-    else:
-        st.error("❌ Kolom 'weekday' atau 'cnt' tidak ditemukan di 'day.csv'.")
+    elif menu == "Weekday vs Weekend":
+        st.header("📌 Penyewaan pada Hari Kerja vs Akhir Pekan")
+        if "weekday" in day_df.columns and "cnt" in day_df.columns:
+            weekday_total = day_df[day_df['weekday'] < 5]['cnt'].sum()
+            weekend_total = day_df[day_df['weekday'] >= 5]['cnt'].sum()
+            st.bar_chart(pd.DataFrame({"Weekday": [weekday_total], "Weekend": [weekend_total]}))
+            st.success(f"✅ Hasil: Jumlah penyewaan lebih tinggi pada hari kerja ({weekday_total}) dibandingkan akhir pekan ({weekend_total}).")
+        else:
+            st.error("❌ Kolom 'weekday' atau 'cnt' tidak ditemukan di 'day.csv'.")
 
     # Pengaruh Suhu terhadap Penyewaan
-    st.header("📌 Bagaimana pengaruh suhu terhadap jumlah penyewaan sepeda?")
-    if "temp" in day_df.columns and "cnt" in day_df.columns:
-        fig, ax = plt.subplots()
-        sns.scatterplot(x="temp", y="cnt", data=day_df, alpha=0.5)
-        ax.set_xlabel("Suhu")
-        ax.set_ylabel("Jumlah Penyewaan")
-        ax.set_title("Pengaruh Suhu terhadap Jumlah Penyewaan Sepeda")
-        st.pyplot(fig)
-        st.success("✅ Hasil: Dari grafik terlihat bahwa semakin tinggi suhu, jumlah penyewaan cenderung meningkat. Hal ini menunjukkan bahwa orang lebih sering menyewa sepeda saat cuaca lebih hangat.")
-    else:
-        st.error("❌ Kolom 'temp' atau 'cnt' tidak ditemukan di 'day.csv'.")
+    elif menu == "Pengaruh Suhu":
+        st.header("📌 Pengaruh Suhu terhadap Penyewaan")
+        if "temp" in day_df.columns and "cnt" in day_df.columns:
+            fig, ax = plt.subplots()
+            sns.scatterplot(x="temp", y="cnt", data=day_df, alpha=0.5)
+            ax.set_xlabel("Suhu")
+            ax.set_ylabel("Jumlah Penyewaan")
+            ax.set_title("Pengaruh Suhu terhadap Penyewaan Sepeda")
+            st.pyplot(fig)
+            st.success("✅ Hasil: Semakin tinggi suhu, jumlah penyewaan cenderung meningkat.")
+        else:
+            st.error("❌ Kolom 'temp' atau 'cnt' tidak ditemukan di 'day.csv'.")
