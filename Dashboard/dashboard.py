@@ -19,11 +19,17 @@ else:
 
 # Sidebar filters
 st.sidebar.header("🔍 Filter Data")
-season_map = {1: "Musim Semi", 2: "Musim Panas", 3: "Musim Gugur", 4: "Musim Dingin"}
-df['season'] = df['season'].map(season_map)
 
-season = st.sidebar.selectbox("Pilih Musim", ["Semua"] + df['season'].unique().tolist())
-weather = st.sidebar.selectbox("Pilih Cuaca", ["Semua"] + df['weathersit'].unique().tolist())
+# Mapping Musim & Cuaca
+season_map = {1: "Musim Semi", 2: "Musim Panas", 3: "Musim Gugur", 4: "Musim Dingin"}
+weather_map = {1: "Cerah", 2: "Berawan", 3: "Hujan", 4: "Salju"}
+
+df['season'] = df['season'].map(season_map)
+df['weathersit'] = df['weathersit'].map(weather_map)
+
+# Filter berdasarkan Musim & Cuaca
+season = st.sidebar.selectbox("Pilih Musim", ["Semua"] + df['season'].dropna().unique().tolist())
+weather = st.sidebar.selectbox("Pilih Cuaca", ["Semua"] + df['weathersit'].dropna().unique().tolist())
 
 # Apply filters
 filtered_df = df.copy()
@@ -31,6 +37,10 @@ if season != "Semua":
     filtered_df = filtered_df[filtered_df['season'] == season]
 if weather != "Semua":
     filtered_df = filtered_df[filtered_df['weathersit'] == weather]
+
+# Debugging - Menampilkan Data yang Difilter
+st.write("🔍 Data yang Difilter:")
+st.write(filtered_df.head())
 
 # Main Dashboard Title
 st.title("🚲 Dashboard Penyewaan Sepeda")
@@ -62,11 +72,14 @@ st.plotly_chart(fig_weather)
 
 # Analisis Pengaruh Kecepatan Angin
 st.subheader("💨 Pengaruh Kecepatan Angin Terhadap Penyewaan")
-fig_wind = px.scatter(filtered_df, x='windspeed', y='cnt',
-                      title="Hubungan Kecepatan Angin dengan Penyewaan Sepeda",
-                      labels={'windspeed': "Kecepatan Angin", 'cnt': "Jumlah Penyewaan"},
-                      trendline="ols")  # Menambahkan garis tren
-st.plotly_chart(fig_wind)
+if 'windspeed' in filtered_df.columns:
+    fig_wind = px.scatter(filtered_df, x='windspeed', y='cnt',
+                          title="Hubungan Kecepatan Angin dengan Penyewaan Sepeda",
+                          labels={'windspeed': "Kecepatan Angin", 'cnt': "Jumlah Penyewaan"},
+                          trendline="ols")  # Menambahkan garis tren
+    st.plotly_chart(fig_wind)
+else:
+    st.warning("Data tidak memiliki kolom 'windspeed'.")
 
 st.subheader("🎯 Kesimpulan dan Rekomendasi")
 st.markdown("""
