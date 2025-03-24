@@ -3,6 +3,7 @@ import streamlit as st
 import plotly.express as px
 import matplotlib.pyplot as plt
 import os
+import statsmodels.api as sm
 
 # Menentukan path file
 base_path = os.path.dirname(os.path.abspath(__file__))
