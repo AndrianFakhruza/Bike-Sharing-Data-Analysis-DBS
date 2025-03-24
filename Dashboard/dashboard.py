@@ -1,75 +1,75 @@
-import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import streamlit as st
+import plotly.express as px
 import os
 
-# Load Data
-def load_data():
-    base_path = os.path.dirname(__file__)  # Ambil direktori file ini
-    day_path = os.path.join(base_path, "day.csv")
+# Load dataset
+base_path = os.path.dirname(os.path.abspath(__file__))  # Path dari file dashboard.py
+file_path = os.path.join(base_path, "all_data.csv")  # Gabungkan path
+df = pd.read_csv(file_path)
 
-    try:
-        day_df = pd.read_csv(day_path)
+# Sidebar filters
+st.sidebar.header("🔍 Filter Data")
+year = st.sidebar.selectbox("Pilih Tahun", ["Semua"] + sorted(df['yr_hour'].unique().tolist()))
+season = st.sidebar.selectbox("Pilih Musim", ["Semua"] + sorted(df['season_hour'].unique().tolist()))
+day_type = st.sidebar.selectbox("Pilih Tipe Hari", ["Semua", "Weekday", "Weekend"])
+weather = st.sidebar.selectbox("Pilih Cuaca", ["Semua"] + sorted(df['weathersit_hour'].unique().tolist()))
+month = st.sidebar.selectbox("Pilih Bulan", ["Semua"] + sorted(df['mnth_hour'].unique().tolist()))
 
-        # Ubah tipe data tanggal
-        if "dteday" in day_df.columns:
-            day_df["dteday"] = pd.to_datetime(day_df["dteday"])
-        else:
-            st.error("Kolom 'dteday' tidak ditemukan dalam 'day.csv'.")
+# Apply filters
+filtered_df = df.copy()
+if year != "Semua":
+    filtered_df = filtered_df[filtered_df['yr_hour'] == year]
+if season != "Semua":
+    filtered_df = filtered_df[filtered_df['season_hour'] == season]
+if day_type != "Semua":
+    if day_type == "Weekday":
+        filtered_df = filtered_df[filtered_df['weekday_hour'] < 6]
+    else:
+        filtered_df = filtered_df[filtered_df['weekday_hour'] >= 6]
+if weather != "Semua":
+    filtered_df = filtered_df[filtered_df['weathersit_hour'] == weather]
+if month != "Semua":
+    filtered_df = filtered_df[filtered_df['mnth_hour'] == month]
 
-        return day_df
+# Main Dashboard Title
+st.title("🚲 Dashboard Penyewaan Sepeda")
+st.markdown("Analisis data penyewaan sepeda berdasarkan berbagai faktor seperti musim, cuaca, dan waktu.")
 
-    except FileNotFoundError as e:
-        st.error(f"❌ File tidak ditemukan: {e}")
-        return None
+# Key Metrics
+total_rentals = filtered_df['cnt_hour'].sum()
+daily_avg = round(filtered_df['cnt_hour'].mean(), 2)
+max_rental = filtered_df['cnt_hour'].max()
+min_rental = filtered_df['cnt_hour'].min()
+max_date = filtered_df.loc[filtered_df['cnt_hour'].idxmax(), 'dteday']
+min_date = filtered_df.loc[filtered_df['cnt_hour'].idxmin(), 'dteday']
 
-day_df = load_data()
+st.subheader("📊 Metrik Utama")
+st.metric("Total Penyewaan", f"{total_rentals:,}")
+st.metric("Rata-rata per Hari", f"{daily_avg:,}")
+st.metric("Penyewaan Tertinggi", f"{max_rental:,}", help=f"Pada {max_date}")
+st.metric("Penyewaan Terendah", f"{min_rental:,}", help=f"Pada {min_date}")
 
-if day_df is not None:
-    # Sidebar Menu dengan Dropdown
-    st.sidebar.title("📊 Menu Analisis")
-    menu = st.sidebar.selectbox(
-        "Pilih Analisis:", 
-        ["Pola Penggunaan Sepeda Berdasarkan Musim", "Pengaruh Kecepatan Angin terhadap Penyewaan"]
-    )
+# Rentals per hour
+time_series = filtered_df.groupby('hr')['cnt_hour'].sum().reset_index()
+st.subheader("⏰ Jumlah Penyewaan Berdasarkan Jam")
+fig_hourly = px.bar(time_series, x='hr', y='cnt_hour', title="Jumlah Penyewaan Berdasarkan Jam")
+st.plotly_chart(fig_hourly)
 
-    # Header Dashboard
-    st.title("🚲 Dashboard Penyewaan Sepeda")
-    st.write("Analisis penggunaan sepeda berdasarkan musim dan pengaruh kecepatan angin.")
+# Seasonal Rentals
+seasonal_rentals = filtered_df.groupby('season_hour')['cnt_hour'].sum().reset_index()
+st.subheader("🍂 Penyewaan Berdasarkan Musim")
+fig_season = px.bar(seasonal_rentals, x='season_hour', y='cnt_hour', title="Penyewaan Berdasarkan Musim")
+st.plotly_chart(fig_season)
 
-    # 1️⃣ Pola Penggunaan Sepeda Berdasarkan Musim
-    if menu == "Pola Penggunaan Sepeda Berdasarkan Musim":
-        st.header("📌 Pola Penggunaan Sepeda Berdasarkan Musim")
-        if "season" in day_df.columns and "cnt" in day_df.columns:
-            season_mapping = {1: "Musim Semi", 2: "Musim Panas", 3: "Musim Gugur", 4: "Musim Dingin"}
-            day_df["season_label"] = day_df["season"].map(season_mapping)
+# Weather impact
+weather_rentals = filtered_df.groupby('weathersit_hour')['cnt_hour'].mean().reset_index()
+st.subheader("🌤️ Pengaruh Cuaca Terhadap Penyewaan")
+fig_weather = px.bar(weather_rentals, x='weathersit_hour', y='cnt_hour', title="Rata-rata Penyewaan Berdasarkan Cuaca")
+st.plotly_chart(fig_weather)
 
-            season_count = day_df.groupby("season_label")["cnt"].sum().reset_index()
-            fig, ax = plt.subplots()
-            sns.barplot(x="season_label", y="cnt", data=season_count, ax=ax, palette="coolwarm")
-            ax.set_xlabel("Musim")
-            ax.set_ylabel("Jumlah Penyewaan")
-            ax.set_title("Pola Penggunaan Sepeda Berdasarkan Musim")
-            st.pyplot(fig)
-
-            # Insight
-            max_season = season_count.loc[season_count["cnt"].idxmax(), "season_label"]
-            st.success(f"✅ Hasil: Jumlah penyewaan sepeda tertinggi terjadi pada {max_season}.")
-        else:
-            st.error("❌ Kolom 'season' atau 'cnt' tidak ditemukan di 'day.csv'.")
-
-    # 2️⃣ Pengaruh Kecepatan Angin terhadap Penyewaan
-    elif menu == "Pengaruh Kecepatan Angin terhadap Penyewaan":
-        st.header("📌 Pengaruh Kecepatan Angin terhadap Penyewaan Sepeda")
-        if "windspeed" in day_df.columns and "cnt" in day_df.columns:
-            fig, ax = plt.subplots()
-            sns.scatterplot(x="windspeed", y="cnt", data=day_df, alpha=0.5)
-            ax.set_xlabel("Kecepatan Angin")
-            ax.set_ylabel("Jumlah Penyewaan")
-            ax.set_title("Pengaruh Kecepatan Angin terhadap Penyewaan Sepeda")
-            st.pyplot(fig)
-
-            st.success("✅ Hasil: Secara umum, kecepatan angin yang lebih tinggi cenderung berhubungan dengan penurunan jumlah penyewaan sepeda.")
-        else:
-            st.error("❌ Kolom 'windspeed' atau 'cnt' tidak ditemukan di 'day.csv'.")
+st.subheader("🎯 Kesimpulan dan Rekomendasi")
+st.markdown("""
+- Cuaca sangat memengaruhi penyewaan sepeda. Saat cerah, penyewaan tinggi, menurun saat mendung, dan drastis berkurang saat hujan.
+- Dalam sehari, penyewaan memuncak pukul 17:00, kemungkinan karena jam pulang kerja. Lonjakan juga terjadi pukul 08:00-09:00 saat orang berangkat kerja atau sekolah.
+""")
