@@ -22,10 +22,10 @@ if not os.path.exists(day_file) or not os.path.exists(hour_file):
 data_option = st.sidebar.radio("📂 Pilih Dataset", ["Per Hari", "Per Jam"])
 df = pd.read_csv(day_file if data_option == "Per Hari" else hour_file)
 
-# # Sidebar Filters
-# st.sidebar.header("🔍 Filter Data")
-# season_map = {1: "🌱 Musim Semi", 2: "☀️ Musim Panas", 3: "🍂 Musim Gugur", 4: "❄️ Musim Dingin"}
-# weather_map = {1: "☀️ Cerah", 2: "⛅ Berawan", 3: "🌧️ Hujan", 4: "❄️ Salju"}
+# Sidebar Filters
+st.sidebar.header("🔍 Filter Data")
+season_map = {1: "🌱 Musim Semi", 2: "☀️ Musim Panas", 3: "🍂 Musim Gugur", 4: "❄️ Musim Dingin"}
+weather_map = {1: "☀️ Cerah", 2: "⛅ Berawan", 3: "🌧️ Hujan", 4: "❄️ Salju"}
 
 df['season'] = df['season'].map(season_map)
 df['weathersit'] = df['weathersit'].map(weather_map)
