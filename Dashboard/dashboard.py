@@ -58,13 +58,13 @@ with col4:
 # Grafik Penyewaan Berdasarkan Musim
 st.subheader("📅 Penyewaan Sepeda Berdasarkan Musim")
 seasonal_rentals = filtered_df.groupby('season')['cnt'].sum().reset_index()
-fig_season = px.bar(seasonal_rentals, x='season', y='cnt', color='season', title="Penyewaan Berdasarkan Musim")
+fig_season = px.bar(seasonal_rentals, x='season', y='cnt', color='season', title="Penyewaan Berdasarkan Musim", color_discrete_sequence=["blue"])
 st.plotly_chart(fig_season, use_container_width=True)
 
 # Grafik Pengaruh Cuaca
 st.subheader("🌦️ Pengaruh Cuaca terhadap Penyewaan")
 weather_rentals = filtered_df.groupby('weathersit')['cnt'].mean().reset_index()
-fig_weather = px.bar(weather_rentals, x='weathersit', y='cnt', color='weathersit', title="Rata-rata Penyewaan Berdasarkan Cuaca")
+fig_weather = px.bar(weather_rentals, x='weathersit', y='cnt', color='weathersit', title="Rata-rata Penyewaan Berdasarkan Cuaca", color_discrete_sequence=["blue"])
 st.plotly_chart(fig_weather, use_container_width=True)
 
 # Grafik Hubungan Kecepatan Angin dan Penyewaan
